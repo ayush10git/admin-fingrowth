@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input {
+  @apply w-[400px] border border-gray-200 py-2 px-6 bg-zinc-100/40;
+}
+
+.btn {
+  background-image: linear-gradient(black, #32325d);
+}
+
+.box {
+  background-image: linear-gradient(#f4f1ef, #eae8e1);
+}
