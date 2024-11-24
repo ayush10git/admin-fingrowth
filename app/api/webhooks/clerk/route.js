@@ -3,7 +3,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { createUser } from "@/lib/actions/user.action"; // Your DB action to create a user
+import { createUser } from "@/lib/action"; // Your DB action to create a user
 
 export async function POST(req) {
   const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
