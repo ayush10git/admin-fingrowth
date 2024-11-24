@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { IoImageOutline } from "react-icons/io5"; // For image icon
-import { useSession } from "next-auth/react";
+// import { useSession } from "next-auth/react";
 
 const BlogPostForm = () => {
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -59,7 +59,7 @@ const BlogPostForm = () => {
         body: JSON.stringify({
           title: formData.title,
           content: formData.desc,
-          author: session?.user?.name,
+          author: "session?.user?.name",
           imageUrl,
         }),
       });
