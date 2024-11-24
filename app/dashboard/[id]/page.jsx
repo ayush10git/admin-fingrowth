@@ -30,6 +30,7 @@ const BlogDetails = () => {
           height={2000}
           width={2000}
           className="w-[370px]"
+          alt=""
         />
         <div className="">
           {blog.content.split("\n").map((paragraph, index) => (

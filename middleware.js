@@ -5,9 +5,9 @@ import { NextResponse } from "next/server";
 const isPublicRoute = createRouteMatcher([
   "/sign-in",
   "/sign-up",
-  "/",
   "/dashboard",
-  "/dashboard(.*)"
+  "/dashboard(.*)",
+  "/profile"
 ]);
 
 // Define public API routes
@@ -46,7 +46,6 @@ export default clerkMiddleware((auth, req) => {
 export const config = {
   matcher: [
     "/((?!.*\\..*|_next).*)", // Match all routes except static files and Next.js internals
-    "/",
     "/(api|trpc)(.*)",
     "/dashboard/:path*", // Enable dynamic segments under /dashboard
   ],

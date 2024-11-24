@@ -1,11 +1,11 @@
-import LoginForm from "@/components/LoginForm";
-import { redirect } from "next/navigation";
+import React from 'react'
 
-export default async function Home() {
-
-
+const page = () => {
   return (
-    <main>
-    </main>
-  );
+    <div>
+      
+    </div>
+  )
 }
+
+export default page
