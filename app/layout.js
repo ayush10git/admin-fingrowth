@@ -1,5 +1,5 @@
 // import Navbar from "@/components/Navbar";
-// import { AuthProvider } from "./Providers";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
@@ -36,10 +36,12 @@ const gilroy = localFont({
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`${denton.variable} ${gilroy.variable}`}>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={`${denton.variable} ${gilroy.variable}`}>
+          {children}
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
