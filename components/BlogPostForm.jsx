@@ -1,8 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { IoImageOutline } from "react-icons/io5"; // For image icon
+import { useSession } from "next-auth/react";
 
 const BlogPostForm = () => {
+  const { data: session } = useSession();
+
   const [formData, setFormData] = useState({
     title: "",
     image: null,
@@ -25,33 +28,56 @@ const BlogPostForm = () => {
     setLoading(true);
     setError("");
 
-    const formDataToSend = new FormData();
-    formDataToSend.append("title", formData.title);
-    formDataToSend.append("desc", formData.desc);
-    formDataToSend.append("image", formData.image);
-    formDataToSend.append("author", "Author Name"); // Add the author dynamically or statically
-
     try {
+      let imageUrl = null;
+
+      // Step 1: Upload Image to Cloudinary via Next.js API Route
+      if (formData.image) {
+        const formDataForImage = new FormData();
+        formDataForImage.append("file", formData.image);
+
+        const uploadResponse = await fetch("/api/image-upload", {
+          method: "POST",
+          body: formDataForImage,
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Image upload failed.");
+        }
+
+        const uploadResult = await uploadResponse.json();
+        imageUrl = uploadResult.secure_url;
+      }
+
+      console.log("Image URL", imageUrl);
+      
+
+      // Step 2: Submit Blog Post
       const response = await fetch("/api/blog", {
         method: "POST",
-        body: formDataToSend,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          content: formData.desc,
+          author: session?.user?.name,
+          imageUrl,
+        }),
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        alert("Blog post added successfully!");
-        setFormData({
-          title: "",
-          image: null,
-          desc: "",
-        });
-      } else {
-        setError(result.error || "An error occurred while adding the blog.");
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.error || "Failed to create blog post.");
       }
+
+      alert("Blog post added successfully!");
+      setFormData({
+        title: "",
+        image: null,
+        desc: "",
+      });
     } catch (err) {
-      console.log(err);
-      setError("Something went wrong!");
+      console.error(err);
+      setError(err.message || "Something went wrong!");
     } finally {
       setLoading(false);
     }

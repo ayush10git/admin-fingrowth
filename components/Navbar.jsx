@@ -9,6 +9,8 @@ import React from "react";
 const Navbar = () => {
   const { data: session } = useSession();
 
+  console.log(session);
+
   return (
     <div className="flex items-center justify-between bg-[#EAE8E1] h-[70px] shadow-sm">
       <Image
