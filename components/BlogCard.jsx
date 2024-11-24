@@ -8,7 +8,7 @@ const BlogCard = ({ id, title, author, image, publishDate }) => {
 
   return (
     <div
-      className="flex flex-col justify-between p-4 m-5 bg-[#EAE8E1] w-[250px] h-[500px] rounded-lg hover:scale-105 transition-transform ease-in-out duration-300 box"
+      className="flex flex-col justify-around p-4 m-5 bg-[#EAE8E1] w-[250px] h-[500px] rounded-lg hover:scale-105 transition-transform ease-in-out duration-300 box"
       onClick={() => router.push(`/dashboard/${id}`)} 
     >
       <Image
@@ -21,13 +21,13 @@ const BlogCard = ({ id, title, author, image, publishDate }) => {
       <div className="flex flex-col">
         <div className="font-gilroy flex gap-2">
           <span>Title: </span>
-          <span className="font-denton font-medium">{title}</span>
+          <span className="font-gilroy font-medium">{title}</span>
         </div>
         <span className="font-gilroy ">
-          Author: <span className="font-denton font-medium">{author}</span>
+          Author: <span className="font-gilroy font-medium">{author}</span>
         </span>
         <span className="font-gilroy">
-          Published on: <span className="font-denton font-medium">{publishDate}</span>
+          Published on: <span className="font-gilroy font-medium">{publishDate}</span>
         </span>
       </div>
     </div>

@@ -2,10 +2,13 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { IoImageOutline } from "react-icons/io5"; // For image icon
-// import { useSession } from "next-auth/react";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const BlogPostForm = () => {
-  // const { data: session } = useSession();
+  const { user } = useUser();
+  console.log(user);
+  const router = useRouter();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -59,7 +62,7 @@ const BlogPostForm = () => {
         body: JSON.stringify({
           title: formData.title,
           content: formData.desc,
-          author: "session?.user?.name",
+          author: user.fullName,
           imageUrl,
         }),
       });
@@ -70,6 +73,7 @@ const BlogPostForm = () => {
       }
 
       alert("Blog post added successfully!");
+      router.push("/dashboard")
       setFormData({
         title: "",
         image: null,

@@ -1,8 +1,8 @@
-
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import {currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { SignOutButton } from "@clerk/nextjs";
 
 const Navbar = async () => {
   const user = await currentUser();
@@ -27,12 +27,7 @@ const Navbar = async () => {
       <div className="flex gap-7 items-center justify-center font-gilroy text-md">
         <Link href="/dashboard/add">Add Blog</Link>
         <Link href="/dashboard/waitlist">Waitlist</Link>
-        <button
-          // onClick={() => signOut()}
-          className="btn flex items-center justify-center gap-1 md:px-[32px] md:py-[10px] text-white rounded-full mr-4"
-        >
-          Log Out
-        </button>
+        <SignOutButton className="btn flex items-center justify-center gap-1 md:px-[32px] md:py-[10px] text-white rounded-full mr-4" />
       </div>
     </div>
   );
