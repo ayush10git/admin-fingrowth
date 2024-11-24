@@ -6,7 +6,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-in",
   "/sign-up",
   "/",
-  "/home",
+  "/dashboard",
 ]);
 
 // Define public API routes
@@ -16,12 +16,12 @@ const isPublicApiRoute = createRouteMatcher(["/api/blog", "/api/image-upload"]);
 export default clerkMiddleware((auth, req) => {
   const { userId } = auth();
   const currentUrl = new URL(req.url);
-  const isAccessingDashboard = currentUrl.pathname === "/home";
+  const isAccessingDashboard = currentUrl.pathname === "/dashboard";
   const isApiRequest = currentUrl.pathname.startsWith("/api");
 
   // If user is logged in and accessing a public route but not the dashboard
   if (userId && isPublicRoute(req) && !isAccessingDashboard) {
-    return NextResponse.redirect(new URL("/home", req.url));
+    return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
   // If user is not logged in

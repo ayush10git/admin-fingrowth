@@ -7,7 +7,8 @@ const page = () => {
       {blogs.map((blog) => (
         <div className="">
           <BlogCard
-          id={blog.id}
+            key={blog.id}
+            id={blog.id}
             title={blog.title}
             image={blog.image}
             author={blog.author}

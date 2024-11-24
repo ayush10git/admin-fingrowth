@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import React, { useState } from "react";
 import { IoImageOutline } from "react-icons/io5"; // For image icon
 // import { useSession } from "next-auth/react";
@@ -50,7 +51,6 @@ const BlogPostForm = () => {
       }
 
       console.log("Image URL", imageUrl);
-      
 
       // Step 2: Submit Blog Post
       const response = await fetch("/api/blog", {
@@ -136,7 +136,9 @@ const BlogPostForm = () => {
         )}
         {formData.image && formData.image.type.startsWith("image") && (
           <div className="mt-4 flex justify-center">
-            <img
+            <Image
+              width={2000}
+              height={2000}
               src={URL.createObjectURL(formData.image)}
               alt="Preview"
               className="max-w-[200px] h-auto rounded-lg border-2 border-gray-200"
