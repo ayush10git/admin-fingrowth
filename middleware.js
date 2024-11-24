@@ -7,6 +7,7 @@ const isPublicRoute = createRouteMatcher([
   "/sign-up",
   "/",
   "/dashboard",
+  "/dashboard(.*)"
 ]);
 
 // Define public API routes
@@ -16,8 +17,9 @@ const isPublicApiRoute = createRouteMatcher(["/api/blog", "/api/image-upload"]);
 export default clerkMiddleware((auth, req) => {
   const { userId } = auth();
   const currentUrl = new URL(req.url);
-  const isAccessingDashboard = currentUrl.pathname === "/dashboard";
-  const isApiRequest = currentUrl.pathname.startsWith("/api");
+  const pathname = currentUrl.pathname;
+  const isAccessingDashboard = pathname.startsWith("/dashboard");
+  const isApiRequest = pathname.startsWith("/api");
 
   // If user is logged in and accessing a public route but not the dashboard
   if (userId && isPublicRoute(req) && !isAccessingDashboard) {
@@ -36,11 +38,16 @@ export default clerkMiddleware((auth, req) => {
       return NextResponse.redirect(new URL("/sign-in", req.url));
     }
   }
-  
+
   return NextResponse.next();
 });
 
 // Middleware matcher configuration
 export const config = {
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)"],
+  matcher: [
+    "/((?!.*\\..*|_next).*)", // Match all routes except static files and Next.js internals
+    "/",
+    "/(api|trpc)(.*)",
+    "/dashboard/:path*", // Enable dynamic segments under /dashboard
+  ],
 };
