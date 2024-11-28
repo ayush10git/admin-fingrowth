@@ -1,10 +1,7 @@
 import BlogCard from "@/components/BlogCard";
-// import { blogs } from "@/data";
-import { currentUser } from "@clerk/nextjs/server";
 import { getAllBlogs } from "@/lib/action";
 
 const page = async () => {
-  const user = await currentUser();
 
   const blogs = await getAllBlogs();
   
@@ -12,7 +9,7 @@ const page = async () => {
   return (
     <div className="h-full min-h-[calc(100vh-70px)] flex flex-wrap justify-center bg-[#F4F1EF]">
       {blogs.map((blog) => (
-        <div className="">
+        <div className="" key={blog._id}>
           <BlogCard
             key={blog._id}
             id={blog._id}

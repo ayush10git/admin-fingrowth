@@ -1,11 +1,13 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { deletePost, getAllBlogs, updatePost } from "@/lib/action";
+import { deletePost, getAllBlogs } from "@/lib/action";
 import { useEffect, useState } from "react";
 
 const BlogDetails = () => {
   const { id } = useParams();
+  const router = useRouter();
+
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,8 +16,7 @@ const BlogDetails = () => {
     image: "",
     content: "",
   });
-  const [imageFile, setImageFile] = useState(null); // Handle image file separately
-  const router = useRouter();
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchBlog = async () => {
@@ -29,49 +30,62 @@ const BlogDetails = () => {
           content: selectedBlog.content,
         });
         setLoading(false);
-      } catch (error) {
-        console.error("Error fetching blog:", error);
+      } catch (err) {
+        console.error("Error fetching blog:", err);
         setLoading(false);
       }
     };
-
     fetchBlog();
   }, [id]);
 
   const handleDelete = async () => {
     try {
       await deletePost(id);
+      alert("Blog deleted successfully!");
       router.push("/dashboard");
-    } catch (error) {
-      console.error("Error deleting blog:", error);
+    } catch (err) {
+      console.error("Error deleting blog:", err);
     }
   };
 
-  const handleEdit = () => {
-    setIsModalOpen(true);
-  };
+  const handleEdit = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+    try {
+      const response = await fetch(`/api/blog/`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: formData.title,
+          content: formData.content,
+          image: formData.image, // Add logic for image upload if necessary
+          id,
+        }),
+      });
+
+      if (!response.ok) {
+        const result = await response.json();
+        throw new Error(result.error || "Failed to update blog post.");
+      }
+
+      alert("Blog updated successfully!");
+      setIsModalOpen(false);
+      router.push(`/dashboard`); // Refresh the page to fetch updated blog details
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Something went wrong!");
+    }
   };
 
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (name === "image") {
-      setFormData({ ...formData, [name]: files[0] });
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
+  if (loading) return <div>Loading...</div>;
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!blog) {
-    return <div>Blog not found</div>;
-  }
+  if (!blog) return <div>Blog not found</div>;
 
   return (
     <div className="bg-[#F4F1EF] min-h-screen px-10 py-5 flex flex-col gap-6">
@@ -80,7 +94,7 @@ const BlogDetails = () => {
         <div className="flex flex-col">
           <span className="font-gilroy">{blog.author}</span>
           <span className="font-gilroy font-light text-sm">
-            {blog.publishDate}
+            {new Date(blog.publishDate).toLocaleDateString()}
           </span>
         </div>
       </div>
@@ -88,30 +102,27 @@ const BlogDetails = () => {
       <div className="flex gap-8">
         <Image
           src={blog.image}
-          height={2000}
-          width={2000}
-          className="w-[370px]"
+          height={200}
+          width={200}
           alt="Blog Image"
+          className="rounded-md"
         />
         <div>
           {blog.content.split("\n").map((paragraph, index) => (
-            <p
-              key={index}
-              className="mb-4 text-gray-600 font-gilroy text-[17px] font-medium"
-            >
+            <p key={index} className="mb-4 text-gray-600">
               {paragraph.trim()}
             </p>
           ))}
           <div className="flex gap-4 mt-6 justify-end">
             <button
-              onClick={handleEdit}
-              className="btn text-white font-medium font-gilroy rounded-lg px-5 py-1 w-[6rem] hover:scale-105 transition-transform ease-in-out duration-600"
+              onClick={() => setIsModalOpen(true)}
+              className="btn bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
             >
               Edit
             </button>
             <button
               onClick={handleDelete}
-              className="btn text-white font-medium font-gilroy rounded-lg px-5 py-1 w-[6rem] hover:scale-105 transition-transform ease-in-out duration-300"
+              className="btn bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
             >
               Delete
             </button>
@@ -119,19 +130,15 @@ const BlogDetails = () => {
         </div>
       </div>
 
-      {/* Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg w-1/3">
-            <h2 className="text-2xl mb-4">Edit Blog</h2>
-            <form>
+            <h2 className="text-xl mb-4">Edit Blog</h2>
+            <form onSubmit={handleEdit}>
               <div className="mb-4">
-                <label htmlFor="title" className="block mb-2">
-                  Title
-                </label>
+                <label className="block mb-2">Title</label>
                 <input
                   type="text"
-                  id="title"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
@@ -139,46 +146,29 @@ const BlogDetails = () => {
                 />
               </div>
               <div className="mb-4">
-                <label htmlFor="image" className="block mb-2">
-                  Image (Upload new image)
-                </label>
-                <input
-                  type="file"
-                  id="image"
-                  name="image"
-                  accept="image/*"
-                  onChange={handleChange}
-                  className="w-full p-2 border border-gray-300 rounded"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="content" className="block mb-2">
-                  Content
-                </label>
+                <label className="block mb-2">Content</label>
                 <textarea
-                  id="content"
                   name="content"
                   value={formData.content}
                   onChange={handleChange}
+                  rows={5}
                   className="w-full p-2 border border-gray-300 rounded"
-                  rows="5"
-                />
+                ></textarea>
               </div>
-              <div className="flex gap-4 justify-end">
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="btn text-white font-medium font-gilroy rounded-lg px-5 py-1 w-[6rem] hover:scale-105 transition-transform ease-in-out duration-600"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="btn text-white font-medium font-gilroy rounded-lg px-5 py-1 w-[6rem] hover:scale-105 transition-transform ease-in-out duration-300"
-                >
-                  Save
-                </button>
-              </div>
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+              >
+                Save
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                className="ml-2 bg-gray-300 px-4 py-2 rounded-md hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              {error && <p className="text-red-500 mt-2">{error}</p>}
             </form>
           </div>
         </div>
