@@ -48,34 +48,12 @@ const BlogDetails = () => {
     }
   };
 
-  const handleEdit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const handleEdit = () => {
+    setIsModalOpen(true);
+  };
 
-    try {
-      const response = await fetch(`/api/blog/`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: formData.title,
-          content: formData.content,
-          image: formData.image, // Add logic for image upload if necessary
-          id,
-        }),
-      });
-
-      if (!response.ok) {
-        const result = await response.json();
-        throw new Error(result.error || "Failed to update blog post.");
-      }
-
-      alert("Blog updated successfully!");
-      setIsModalOpen(false);
-      router.push(`/dashboard`); // Refresh the page to fetch updated blog details
-    } catch (err) {
-      console.error(err);
-      setError(err.message || "Something went wrong!");
-    }
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   const handleChange = (e) => {
