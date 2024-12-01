@@ -11,7 +11,7 @@ const isPublicRoute = createRouteMatcher([
 ]);
 
 // Define public API routes
-const isPublicApiRoute = createRouteMatcher(["/api/blog", "/api/image-upload"]);
+const isPublicApiRoute = createRouteMatcher(["/api/blog", "/api/image-upload","/api/waitlist"]);
 
 // Middleware logic
 export default clerkMiddleware((auth, req) => {
